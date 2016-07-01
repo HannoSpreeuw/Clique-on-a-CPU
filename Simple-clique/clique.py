@@ -6,15 +6,22 @@ N = 1500
 # This is an array, indicating all pairs of hits which are correlated.
 # 1 for correlated, 0 for uncorrelated.
 # The idea is to purge it until Nassociated = Nhits
-hits_method1 = np.identity(N, 'int')
+# hits_method1 = np.identity(N, 'int')
+hits_method1 = np.zeros((N, N), 'int')
 
 # x,y or z = 1 would mean something like 1 km.
+km = 1e3
 
 x = np.random.rand(N)
 y = np.random.rand(N)
 z = np.random.rand(N)
 
-ct = np.random.rand(N)
+# x = np.linspace(0, km, N)
+# y = np.linspace(0, km, N)
+# z = np.linspace(0, km, N)
+
+ct = 1000 * np.random.rand(N)
+# ct = np.linspace(0, 0.1, N) * 3e8
 
 start = time.clock()
 
@@ -31,11 +38,14 @@ end = time.clock()
 
 time_finding = end - start
 
+print('Percentage hits = {0} %'.format(100 * (np.sum(hits_method1))/hits_method1.size))
+
 print()
 print('Time taken for finding all correlated hits with method 1 = {0}'.format(time_finding))
 
-hits_method2 = np.identity(N, 'int')
-                 
+# hits_method2 = np.identity(N, 'int')
+hits_method2 = np.zeros((N, N), 'int')
+
 # Try to do the same thing without loops.
 start = time.clock() 
 
@@ -82,9 +92,10 @@ while hits.sum() < hits.shape[0] * hits.shape[1]:
     total_hits = np.sum(hits, 0)  
     # print()
     # print(total_hits)   
-    minimal_hits_index = np.argmin(total_hits)      
-    hits = np.delete(hits, minimal_hits_index, 1)
-    hits = np.delete(hits, minimal_hits_index, 0)
+    # minimal_hits_index = np.argmin(total_hits)
+    minimal_hits_indices = np.where(total_hits == total_hits.min())   
+    hits = np.delete(hits, minimal_hits_indices, 1)
+    hits = np.delete(hits, minimal_hits_indices, 0)
     # print()
     # print(hits.shape)
     
